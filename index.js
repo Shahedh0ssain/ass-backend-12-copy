@@ -76,14 +76,34 @@ async function run() {
             const isAdmin = result.role === 'admin';
             res.send({ admin: isAdmin });
         })
-        
-         //get order dfdfdfdf
+
+        //get order dfdfdfdf
         app.get('/order/:id', async (req, res) => {
             const id = req.params.id;
             console.log(id)
             const query = { _id: ObjectId(id) };
             const order = await bookingCollection.findOne(query);
             res.send(order);
+        })
+
+        //create-payment-intren
+        app.post("/create-payment-intent", async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const amount = price * 100;
+            // Create a PaymentIntent with the order amount and currency
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: "usd",
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ],
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+
         })
 
 
@@ -114,9 +134,9 @@ async function run() {
         // })
 
         // post user review:
-        app.post('/review/:email',async(req,res)=>{
-             const email = req.params.email;
-             console.log(email);
+        app.post('/review/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email);
         })
 
         //put api
@@ -152,7 +172,7 @@ async function run() {
                 $set: user,
             };
             const result = await userCollection.updateOne(filter, updateDoc, options);
-            res.send({ result,message:true });
+            res.send({ result, message: true });
 
         })
 
