@@ -1,16 +1,18 @@
-express = require('express');
+const express = require('express');
 const app = express();
 const cors = require('cors');
 const { query } = require('express');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
+
 
 app.use(cors());
 app.use(express.json());
 
-//a-12
-//UWpHBVMDij68zJcc
+
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.3xwumf6.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -52,7 +54,7 @@ async function run() {
             return res.send(result);
         })
 
-        //users
+        // Get all users :
         app.get('/users', async (req, res) => {
             const query = {};
             const result = await userCollection.find(query).toArray();
@@ -74,7 +76,7 @@ async function run() {
             // console.log(email);
             const result = await userCollection.findOne({ email: email })
             const isAdmin = result.role === 'admin';
-            res.send({ admin: isAdmin });
+            res.send(isAdmin);
         })
 
         //get order dfdfdfdf
@@ -107,6 +109,7 @@ async function run() {
         })
 
 
+
         //service  post api :
         app.post('/service', async (req, res) => {
             const service = req.body;
@@ -125,6 +128,12 @@ async function run() {
 
         })
 
+        //post review :
+        app.post('/review', async (req, res) => {
+
+        })
+
+
         // add service api :
         // app.post('/addservice', async (req, res) => {
         //     const service = req.body;
@@ -133,10 +142,13 @@ async function run() {
         //     res.send(addService);
         // })
 
+
         // post user review:
         app.post('/review/:email', async (req, res) => {
+
             const email = req.params.email;
-            console.log(email);
+            //  console.log(email);
+
         })
 
         //put api
@@ -163,9 +175,9 @@ async function run() {
 
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
-            console.log(email);
+            // console.log(email);
             const user = req.body;
-            console.log(user);
+            // console.log(user);
             const filter = { email: email };
             const options = { upsert: true };
             const updateDoc = {
@@ -226,7 +238,7 @@ run().catch(console.dir);
 
 app.get('/', (req, res) => {
 
-    res.send('Hello World!')
+    res.send('Hello World!');
 })
 
 
