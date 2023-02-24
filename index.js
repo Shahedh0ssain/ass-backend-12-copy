@@ -25,6 +25,7 @@ async function run() {
         const servicesCollection = client.db('a-12').collection('services');
         const bookingCollection = client.db('a-12').collection('booking');
         const userCollection = client.db('a-12').collection('users');
+        const paymentsCollection = client.db('a-12').collection('payments');
 
         //get api
         app.get('/services', async (req, res) => {
@@ -78,6 +79,12 @@ async function run() {
             const isAdmin = result.role === 'admin';
             res.send(isAdmin);
         })
+        //get all order
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const orders = await bookingCollection.find(query).toArray();
+            res.send(orders);
+        })
 
         //get order dfdfdfdf
         app.get('/order/:id', async (req, res) => {
@@ -109,6 +116,22 @@ async function run() {
 
         })
 
+        //payment post:
+        app.post('/payments', async (req, res) => {
+            const payment = req.body;
+            // console.log(payment);
+            const result = await paymentsCollection.insertOne(payment);
+            const id = payment.bookingId;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const updateResult = await bookingCollection.updateOne(filter, updateDoc)
+            res.send(result);
+        })
 
 
         //service  post api :
