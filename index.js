@@ -28,11 +28,17 @@ async function run() {
         const paymentsCollection = client.db('a-12').collection('payments');
 
         //get api
-        app.get('/services', async (req, res) => {
+     app.get('/services', async (req, res) => {
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+            console.log(page);
+            console.log(size);
             const query = {};
             const cursor = servicesCollection.find(query);
-            const services = await cursor.toArray();
-            res.send(services);
+            const services = await cursor.skip(page * size).limit(size).toArray();
+            const count = await servicesCollection.estimatedDocumentCount();
+            // console.log(count);
+            res.send({ count, services });
         });
 
         //get single product :
