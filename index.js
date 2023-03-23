@@ -27,6 +27,18 @@ async function run() {
         const userCollection = client.db('a-12').collection('users');
         const paymentsCollection = client.db('a-12').collection('payments');
 
+        
+          //get api
+        app.get('/all-services', async (req, res) => {
+            console.log('call')
+            const query = {};
+            const cursor = servicesCollection.find(query);
+            const services = await cursor.toArray();
+            console.log(services)
+            res.send(services);
+        });
+        
+        
         //get api
      app.get('/services', async (req, res) => {
             const page = parseInt(req.query.page);
