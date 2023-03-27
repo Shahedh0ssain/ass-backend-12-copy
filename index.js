@@ -43,8 +43,7 @@ async function run() {
      app.get('/services', async (req, res) => {
             const page = parseInt(req.query.page);
             const size = parseInt(req.query.size);
-            console.log(page);
-            console.log(size);
+    
             const query = {};
             const cursor = servicesCollection.find(query);
             const services = await cursor.skip(page * size).limit(size).toArray();
@@ -139,7 +138,7 @@ async function run() {
             const payment = req.body;
             // console.log(payment);
             const result = await paymentsCollection.insertOne(payment);
-            const id = payment.bookingId;
+            const id = payment.bookId;
             const filter = { _id: ObjectId(id) };
             const updateDoc = {
                 $set: {
